@@ -144,6 +144,12 @@
         var perimetres = [];
         var searchMarker = null;
 
+        // Fonction pour vérifier si un point est à l'intérieur d'un cercle
+        function isPointInCircle(point, circleCenter, circleRadius) {
+            var distance = L.latLng(circleCenter).distanceTo(point);
+            return distance <= circleRadius;
+        }
+
         function loadCentrales(url) {
             Papa.parse(url, {
                 download: true,
@@ -217,6 +223,7 @@
 
                     var lat = parseFloat(data[0].lat);
                     var lon = parseFloat(data[0].lon);
+                    var userLocation = L.latLng(lat, lon);
 
                     if (searchMarker) {
                         map.removeLayer(searchMarker);
@@ -233,12 +240,21 @@
 
                     map.setView([lat, lon], 14);
 
-                    // Afficher le message d'éligibilité
+                    // Vérifier si l'utilisateur est dans un périmètre
+                    var isEligible = perimetres.some(perimetre => {
+                        return isPointInCircle(userLocation, perimetre.center, perimetre.radius);
+                    });
+
+                    // Afficher le message d'éligibilité uniquement si l'utilisateur est dans un périmètre
                     var message = document.getElementById("eligibilityMessage");
-                    message.style.display = "block"; // Afficher le message
-                    setTimeout(function() {
-                        message.style.display = "none"; // Masquer le message après 5 secondes
-                    }, 5000); // 5000 ms = 5 secondes
+                    if (isEligible) {
+                        message.style.display = "block"; // Afficher le message
+                        setTimeout(function() {
+                            message.style.display = "none"; // Masquer le message après 5 secondes
+                        }, 5000); // 5000 ms = 5 secondes
+                    } else {
+                        message.style.display = "none"; // Masquer le message si l'utilisateur n'est pas éligible
+                    }
                 });
         }
 
