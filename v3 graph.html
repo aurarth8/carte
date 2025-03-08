@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Répartition du prix du kWh</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Intégration de Chart.js -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: transparent; /* Fond transparent */
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        canvas {
+            max-width: 100%;
+            max-height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <!-- Canvas pour le graphique -->
+    <canvas id="price-distribution-chart"></canvas>
+
+    <script>
+        // Données pour le graphique
+        const distributionData = {
+            labels: ["Fourniture photovoltaïque (Helioneo)", "TURPE (Fournisseur actuel)", "TVA"],
+            datasets: [{
+                data: [58, 25, 17], // Pourcentages
+                backgroundColor: ["#457b9d", "#a8dadc", "#e63946"], // Couleurs du graphique
+                borderColor: "#f1faee", // Couleur de la bordure
+                borderWidth: 2
+            }]
+        };
+
+        // Configuration du graphique
+        const chartConfig = {
+            type: 'pie',
+            data: distributionData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false, // Permet au graphique de s'adapter à la taille du canvas
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: '#1d3557', // Couleur du texte de la légende
+                            font: {
+                                size: 14
+                            }
+                        }
+                    },
+                    tooltip: {
+                        enabled: true,
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.label}: ${context.raw}%`;
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        // Création du graphique
+        const ctx = document.getElementById('price-distribution-chart').getContext('2d');
+        const priceDistributionChart = new Chart(ctx, chartConfig);
+    </script>
+</body>
+</html>
